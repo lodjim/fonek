@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      FONEK_POLL_INTERVAL_MIN: ${FONEK_POLL_INTERVAL_MIN:-15}
+    volumes:
+      - ./data:/data
+    # Explicit resolvers: the backend must reach Apple and the anisette lib host,
+    # and Docker gets no nameservers when the host's /etc/resolv.conf is missing.
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      args:
+        BACKEND_URL: http://backend:8000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    restart: unless-stopped

@@ -1,0 +1,18 @@
+data/
+.env
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+node_modules/
+.next/
+
+# Upstream OpenHaystack checkout used to build the firmware (see firmware/README.md)
+openhaystack/
+
+# KiCad local state
+*.kicad_prl
+fp-info-cache
+*-backups/
+*.lck

@@ -1,0 +1,37 @@
+ref,part,value,package,role
+J1,USB4125-GF-A,USB-C power-only,GCT 6-contact through-hole-shell receptacle,5 V charging port
+F1,1206L050/15YR or equivalent,500 mA hold PTC,1206,USB input fault protection
+D3,"PESD5V0S1BA,115",5 V bidirectional ESD diode,SOD-323,USB VBUS ESD shunt
+R1,generic,5.1k 1%,0603,USB CC1 sink termination
+R2,generic,5.1k 1%,0603,USB CC2 sink termination
+U2,BQ21040DBVR,1S LiPo charger with TS,SOT-23-6,temperature-qualified charging
+C1,generic,1uF X7R 10V,0603,charger input bypass
+C2,generic,4.7uF X5R 10V,0805,charger output bypass
+R3,generic,6.8k 1%,0603,about 79 mA fast-charge setting
+R4,generic,2.2k,0603,charging LED current limit
+D2,generic high-efficiency red LED,red LED,0603,on while charging
+BAT1,qualified protected 400 mAh pouch pack with 10k NTC lead,1S 400mAh LiPo,27 x 25 x 6 mm target,rechargeable supply; pack sourcing pending
+SW1,JS102011SAQN,"SPDT slide, one throw unused",C&K through-hole slide,mechanical ON/OFF
+U3,TLV75533PDBVR,3.3 V 500 mA LDO,SOT-23-5,ESP32 supply with enable
+Q1,2N7002LT1G,N-MOSFET,SOT-23,turn system off when USB is present
+R5,generic,100k,0603,VBUS to MOSFET gate
+R6,generic,1M,0603,MOSFET gate pull-down
+R7,generic,100k,0603,LDO enable pull-up to switched battery
+C3,generic,1uF X7R 10V,0603,LDO input bypass
+C4,generic,10uF X5R 6.3V,0805,LDO output bulk capacitor
+C5,generic,100nF X7R 6.3V,0603,ESP32 local bypass
+U1,ESP32-WROOM-32E-N4,"ESP32 BLE module, 4 MB flash",ESP32-WROOM-32E,BLE location beacon
+R8,generic,10k,0603,ESP32 EN pull-up
+C6,generic,1uF X7R 6.3V,0603,ESP32 EN power-on delay
+R9,generic,10k,0603,GPIO0 boot strap pull-up
+R10,generic,6.8k,0603,power LED current limit
+R11,generic,237k 1%,0603,prevent TS-open charger timer-disable mode
+D1,generic high-efficiency green LED,green LED,0603,on when tracker is powered
+TP1,generic,3V3,1 mm test pad,factory programming
+TP2,generic,GND,1 mm test pad,factory programming
+TP3,generic,UART_TX,1 mm test pad,factory programming
+TP4,generic,UART_RX,1 mm test pad,factory programming
+TP5,generic,ESP_EN,1 mm test pad,factory programming
+TP6,generic,BOOT,1 mm test pad,factory programming
+TP7,generic,VBAT,1 mm test pad,battery measurement
+TP8,generic,VBUS,1 mm test pad,charge input measurement
