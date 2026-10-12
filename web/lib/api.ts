@@ -25,6 +25,15 @@ export type Status = {
   poll_interval_min: number;
 };
 
+export type ApiKey = {
+  id: number;
+  name: string;
+  prefix: string;
+  rate_limit_per_min: number;
+  created_at: string;
+  last_used_at: string | null;
+};
+
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,

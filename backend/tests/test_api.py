@@ -95,3 +95,32 @@ def test_poll_dedup_and_queries(client):
     client.delete(f"/api/devices/{id_}")
     with Session(engine) as s:
         assert s.exec(select(Location)).all() == []
+
+
+def test_api_keys_and_public_locations(client):
+    import asyncio
+
+    id_ = client.post("/api/devices", json={"name": "Bike"}).json()["id"]
+    asyncio.run(_poll(id_, [FakeReport(1_700_000_000, 48.0, 2.0)]))
+
+    assert client.get("/api/public/locations").status_code == 401
+    assert client.get("/api/public/locations", headers={"Authorization": "Bearer nope"}).status_code == 401
+    assert client.post("/api/keys", json={"name": "x", "rate_limit_per_min": 0}).status_code == 422
+
+    created = client.post("/api/keys", json={"name": "Partner", "rate_limit_per_min": 2}).json()
+    auth = {"Authorization": f"Bearer {created['key']}"}
+    listed = client.get("/api/keys").json()
+    assert len(listed) == 1 and "key" not in listed[0] and "key_hash" not in listed[0]
+    assert created["key"].startswith(listed[0]["prefix"]) and listed[0]["last_used_at"] is None
+
+    r = client.get("/api/public/locations", headers=auth)
+    assert r.status_code == 200
+    assert r.json()[0]["name"] == "Bike" and r.json()[0]["lat"] == 48.0
+    assert r.headers["X-RateLimit-Limit"] == "2" and r.headers["X-RateLimit-Remaining"] == "1"
+    assert client.get("/api/public/locations", headers=auth).status_code == 200
+    limited = client.get("/api/public/locations", headers=auth)
+    assert limited.status_code == 429 and "Retry-After" in limited.headers
+    assert client.get("/api/keys").json()[0]["last_used_at"] is not None
+
+    assert client.delete(f"/api/keys/{created['id']}").status_code == 204
+    assert client.get("/api/public/locations", headers=auth).status_code == 401

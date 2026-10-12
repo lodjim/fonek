@@ -48,7 +48,7 @@ A single FastAPI process with a background task.
 | --- | --- |
 | `main.py` | App factory; starts the poller on startup unless `FONEK_NO_POLL` is set |
 | `config.py` | Settings from `FONEK_*` environment variables; paths inside the data directory |
-| `models.py` | SQLModel tables (`Device`, `Location`) and the API request/response schemas |
+| `models.py` | SQLModel tables (`Device`, `Location`, `ApiKey`) and the API request/response schemas |
 | `db.py` | SQLite engine, foreign keys on, table creation |
 | `apple.py` | `AccountManager`: restores the Apple session, fetches reports through FindMy.py |
 | `poller.py` | `Poller`: the periodic fetch loop and on-demand refresh, behind one lock |

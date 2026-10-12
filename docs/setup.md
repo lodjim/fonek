@@ -66,6 +66,9 @@ devices. By default Compose publishes ports 3000 and 8000 on all interfaces, so:
 - On a shared network, bind them to localhost (`"127.0.0.1:3000:3000"`) or put a reverse
   proxy with authentication in front.
 - For remote access, prefer a VPN to your home network.
+- To give a third party access, generate an API key in **Settings** and expose only
+  `/api/public/` through a reverse proxy. The key protects that path and nothing else: a
+  third party who can reach the rest of `/api` does not need a key at all.
 
 ## Backups
 
