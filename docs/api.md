@@ -4,7 +4,8 @@ The backend serves a small JSON API under `/api`. The web app reaches it through
 Next.js proxy on port 3000; the backend itself listens on port 8000, where FastAPI also
 serves interactive documentation at `/docs` and the OpenAPI schema at `/openapi.json`.
 
-There is no authentication (see [Keeping it private](setup.md#keeping-it-private)).
+Only `/api/public/*` is authenticated, with an API key; everything else has no
+authentication (see [Keeping it private](setup.md#keeping-it-private)).
 Timestamps are ISO-8601 in UTC, for example `2026-10-04T18:33:39Z`. Errors use FastAPI's
 format: `{"detail": "message"}`.
 
@@ -18,6 +19,10 @@ format: `{"detail": "message"}`.
 | GET | [`/api/devices/{id}/locations`](#get-apidevicesidlocations) | Location history |
 | POST | [`/api/devices/{id}/refresh`](#post-apidevicesidrefresh) | Fetch from Apple now |
 | GET | [`/api/locations/latest`](#get-apilocationslatest) | Latest location of every device |
+| GET | [`/api/keys`](#api-keys) | List API keys |
+| POST | [`/api/keys`](#api-keys) | Generate an API key |
+| DELETE | [`/api/keys/{id}`](#api-keys) | Revoke an API key |
+| GET | [`/api/public/locations`](#get-apipubliclocations) | Latest locations, for third parties (API key) |
 
 ## Objects
 
@@ -130,3 +135,43 @@ request to Apple, so do not call it in a loop.
 ### GET /api/locations/latest
 
 Returns an array with the most recent location of every device that has at least one.
+
+### API keys
+
+Keys are managed from **Settings** in the web app, or with `/api/keys`.
+
+`POST /api/keys` takes `name` (1 to 64 characters) and `rate_limit_per_min` (1 to 6000,
+default `60`) and returns `201`:
+
+```json
+{
+  "id": 1,
+  "name": "Partner",
+  "prefix": "fonek_Ab3dEf",
+  "rate_limit_per_min": 60,
+  "created_at": "2026-10-12T10:00:00Z",
+  "last_used_at": null,
+  "key": "fonek_Ab3dEf..."
+}
+```
+
+`key` is returned only here: the backend stores its SHA-256 hash. `GET /api/keys` returns
+the same objects without `key`. `DELETE /api/keys/{id}` revokes a key immediately (`204`,
+or `404`).
+
+### GET /api/public/locations
+
+The endpoint to hand to a third party. Send the key as a bearer token:
+
+```bash
+curl -H 'Authorization: Bearer fonek_Ab3dEf...' localhost:8000/api/public/locations
+```
+
+Returns the same array as [`/api/locations/latest`](#get-apilocationslatest), with the
+device `name` added to each location. `401` if the key is missing, unknown or revoked.
+`429` with a `Retry-After` header (seconds) once the key has made more than its
+`rate_limit_per_min` requests in the current clock minute; counters reset when the backend
+restarts. Every response carries `X-RateLimit-Limit` and `X-RateLimit-Remaining`.
+
+The **Settings** page of the web app has the same documentation for third parties and a
+playground to send a request with a key.

@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import useSWR from "swr";
-import { KeyRound, MapPin, RefreshCw, Trash2, TriangleAlert } from "lucide-react";
+import { KeyRound, MapPin, RefreshCw, Settings, Trash2, TriangleAlert } from "lucide-react";
 
 import { AddDeviceDialog } from "@/components/add-device-dialog";
 import { KeyInfo } from "@/components/key-info";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -114,12 +115,21 @@ export function Dashboard() {
           <div className="flex items-center gap-2 font-semibold">
             <MapPin className="size-4" /> fonek
           </div>
-          <AddDeviceDialog
-            onCreated={(device) => {
-              devices.mutate();
-              select(device.id);
-            }}
-          />
+          <div className="flex items-center gap-1">
+            <Link
+              href="/settings"
+              aria-label="Settings"
+              className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+            >
+              <Settings />
+            </Link>
+            <AddDeviceDialog
+              onCreated={(device) => {
+                devices.mutate();
+                select(device.id);
+              }}
+            />
+          </div>
         </header>
 
         {loadError ? (

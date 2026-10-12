@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from .apple import AccountManager
 from .db import init_db
 from .poller import Poller
-from .routes import devices, status
+from .routes import devices, keys, status
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
@@ -28,3 +28,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="fonek", lifespan=lifespan)
 app.include_router(devices.router)
 app.include_router(status.router)
+app.include_router(keys.router)
+app.include_router(keys.public)
